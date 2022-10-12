@@ -119,45 +119,50 @@ function mousedown(md_e) {
 document.ondragstart = function() {
     return false;
 };
-if (window.PointerEvent) {
-    // Add Pointer Event Listener
-    swipeFrontElement.addEventListener(
-        "pointerdown",
-        this.handleGestureStart,
-        true
-    );
-    swipeFrontElement.addEventListener(
-        "pointermove",
-        this.handleGestureMove,
-        true
-    );
-    swipeFrontElement.addEventListener("pointerup", this.handleGestureEnd, true);
-    swipeFrontElement.addEventListener(
-        "pointercancel",
-        this.handleGestureEnd,
-        true
-    );
-} else {
-    // Add Touch Listener
-    swipeFrontElement.addEventListener(
-        "touchstart",
-        this.handleGestureStart,
-        true
-    );
-    swipeFrontElement.addEventListener("touchmove", this.handleGestureMove, true);
-    swipeFrontElement.addEventListener("touchend", this.handleGestureEnd, true);
-    swipeFrontElement.addEventListener(
-        "touchcancel",
-        this.handleGestureEnd,
-        true
-    );
+document.addEventListener("touchstart", touch2Mouse, true);
+document.addEventListener("touchmove", touch2Mouse, true);
+document.addEventListener("touchend", touch2Mouse, true);
 
-    // Add Mouse Listener
-    swipeFrontElement.addEventListener(
-        "mousedown",
-        this.handleGestureStart,
-        true
+function touch2Mouse(e) {
+    var theTouch = e.changedTouches[0];
+    var mouseEv;
+
+    switch (e.type) {
+        case "touchstart":
+            mouseEv = "mousedown";
+            break;
+        case "touchend":
+            mouseEv = "mouseup";
+            break;
+        case "touchmove":
+            mouseEv = "mousemove";
+            break;
+        default:
+            return;
+    }
+
+    var mouseEvent = document.createEvent("MouseEvent");
+    mouseEvent.initMouseEvent(
+        mouseEv,
+        true,
+        true,
+        window,
+        1,
+        theTouch.screenX,
+        theTouch.screenY,
+        theTouch.clientX,
+        theTouch.clientY,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null
     );
+    theTouch.target.dispatchEvent(mouseEvent);
+
+    e.preventDefault();
 }
+//--------------------
 window.addEventListener("load", assembleCube);
 scene.addEventListener("mousedown", mousedown);
